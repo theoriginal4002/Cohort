@@ -1,0 +1,134 @@
+/* styles.css */
+
+/* Import Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Lato&display=swap');
+
+/* Root Variables */
+:root {
+    --muted-gold: #D4AF37; /* Represents Rapunzel's hair */
+    --lavender-gray: #C4C3D0; /* Reflects the kingdom's hues */
+    --deep-plum: #673147; /* Adds depth and sophistication */
+    --soft-beige: #F5F5DC; /* Neutral background for cleanliness */
+    --charcoal: #36454F; /* Ensures readability */
+}
+
+/* Global Styles */
+body {
+    font-family: 'Lato', sans-serif;
+    background-color: var(--soft-beige);
+    color: var(--charcoal);
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Header */
+header {
+    background-color: var(--deep-plum);
+    padding: 1rem 0;
+    text-align: center;
+}
+
+.logo {
+    color: var(--muted-gold);
+    font-size: 2.5rem;
+    font-family: 'Playfair Display', serif;
+}
+
+/* Navigation */
+.nav-links {
+    list-style: none;
+    padding: 0;
+    margin: 1rem 0 0;
+    display: flex;
+    justify-content: center;
+}
+
+.nav-links li {
+    margin: 0 1.5rem;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: var(--soft-beige);
+    font-size: 1.2rem;
+    transition: color 0.3s ease;
+}
+
+.nav-links a:hover,
+.nav-links a.active {
+    color: var(--muted-gold);
+}
+
+/* Main Content */
+main {
+    padding: 2rem;
+    text-align: center;
+}
+
+/* Forms */
+.form-container {
+    background-color: var(--lavender-gray);
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-width: 400px;
+    margin: 2rem auto;
+}
+
+.form-container h2 {
+    margin-bottom: 1.5rem;
+    color: var(--deep-plum);
+    font-family: 'Playfair Display', serif;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+    text-align: left;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--charcoal);
+}
+
+.form-group input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--deep-plum);
+    border-radius: 4px;
+    font-size: 1rem;
+    background-color: var(--soft-beige);
+    color: var(--charcoal);
+}
+
+.form-button {
+    background-color: var(--deep-plum);
+    color: var(--soft-beige);
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 4px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.form-button:hover {
+    background-color: var(--muted-gold);
+    color: var(--charcoal);
+}
+
+/* Footer */
+footer {
+    background-color: var(--deep-plum);
+    color: var(--soft-beige);
+    text-align: center;
+    padding: 1rem 0;
+    margin-top: 2rem;
+}
+
+
+
+
+ 
