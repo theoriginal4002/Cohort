@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Itinerary Generator</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <h1>Plan Your Trip</h1>
+    
+    <form id="itineraryForm">
+        <label for="city">City:</label>
+        <input type="text" id="city" required>
+
+        <label for="interests">Interests (comma-separated):</label>
+        <input type="text" id="interests" required>
+
+        <label for="budget">Budget (INR):</label>
+        <input type="number" id="budget" required>
+
+        <label for="people">Number of People:</label>
+        <input type="number" id="people" required>
+
+        <label for="from_date">Start Date:</label>
+        <input type="date" id="from_date" required>
+
+        <label for="to_date">End Date:</label>
+        <input type="date" id="to_date" required>
+
+        <button type="submit">Generate Itinerary</button>
+    </form>
+
+    <div id="output"></div>
+
+    <h2>Chat with the Travel Assistant</h2>
+    <div id="chatbox">
+        <input type="text" id="userMessage" placeholder="Ask about your trip...">
+        <button onclick="sendMessage()">Send</button>
+    </div>
+    <div id="chatOutput"></div>
+
+    <script>
+        let generatedItinerary = "";
+    
+        document.getElementById("itineraryForm").addEventListener("submit", async function(event) {
+            event.preventDefault();
+    
+            // Get form values
+            const city = document.getElementById("city").value;
+            const interests = document.getElementById("interests").value.split(",");
+            const budget = document.getElementById("budget").value;
+            const people = document.getElementById("people").value;
+            const from_date = document.getElementById("from_date").value;
+            const to_date = document.getElementById("to_date").value;
+    
+            // Debugging: Log input data
+            console.log("Form Data:", { city, interests, budget, people, from_date, to_date });
+    
+            try {
+                const response = await fetch("/api/generate-itinerary", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ city, interests, budget, people, from_date, to_date })
+                });
+    
+                // Debugging: Log raw response
+                console.log("Response:", response);
+    
+                if (!response.ok) {
+                    throw new Error("Server error: " + response.status);
+                }
+    
+                const data = await response.json();
+                console.log("Received Data:", data);
+    
+                generatedItinerary = data.itinerary;
+    
+                document.getElementById("output").innerHTML = `<h3>Itinerary:</h3><p>${generatedItinerary}</p>`;
+            } catch (error) {
+                console.error("Error:", error);
+                document.getElementById("output").innerHTML = `<p style="color: red;">Failed to generate itinerary.</p>`;
+            }
+        });
+    </script>
+    
+</body>
+</html>
