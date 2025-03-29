@@ -5,84 +5,206 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Itinerary Generator</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        .container {
+            background: var(--soft-beige);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            max-width: 600px;
+            text-align: center;
+            margin: 2rem auto;
+            border: 5px solid var(--muted-gold);
+        }
+
+        h1, h2 {
+            font-family: 'Playfair Display', serif;
+            color: var(--deep-plum);
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            text-align: left;
+        }
+
+        label {
+            font-weight: bold;
+            color: var(--charcoal);
+        }
+
+        input, button {
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid var(--deep-plum);
+            font-size: 16px;
+        }
+
+        button {
+            background-color: var(--deep-plum);
+            color: var(--soft-beige);
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+            transition: 0.3s ease;
+        }
+
+        button:hover {
+            background-color: var(--muted-gold);
+            color: var(--charcoal);
+        }
+
+        .itinerary-container {
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        .itinerary-item {
+            background: var(--lavender-gray);
+            padding: 10px;
+            border-left: 5px solid var(--muted-gold);
+            margin-bottom: 10px;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .itinerary-item strong {
+            font-weight: bold;
+            color: var(--deep-plum);
+        }
+
+        #chatbox {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        #chatOutput {
+            margin-top: 15px;
+            text-align: left;
+        }
+    </style>
 </head>
 <body>
-    <h1>Plan Your Trip</h1>
-    
-    <form id="itineraryForm">
-        <label for="city">City:</label>
-        <input type="text" id="city" required>
+    <div class="container">
+        <h1>Plan Your Magical Journey</h1>
+        
+        <form id="itineraryForm">
+            <label for="city">City:</label>
+            <input type="text" id="city" required>
 
-        <label for="interests">Interests (comma-separated):</label>
-        <input type="text" id="interests" required>
+            <label for="interests">Interests (comma-separated):</label>
+            <input type="text" id="interests" required>
 
-        <label for="budget">Budget (INR):</label>
-        <input type="number" id="budget" required>
+            <label for="budget">Budget (INR):</label>
+            <input type="number" id="budget" required>
 
-        <label for="people">Number of People:</label>
-        <input type="number" id="people" required>
+            <label for="people">Number of People:</label>
+            <input type="number" id="people" required>
 
-        <label for="from_date">Start Date:</label>
-        <input type="date" id="from_date" required>
+            <label for="from_date">Start Date:</label>
+            <input type="date" id="from_date" required>
 
-        <label for="to_date">End Date:</label>
-        <input type="date" id="to_date" required>
+            <label for="to_date">End Date:</label>
+            <input type="date" id="to_date" required>
 
-        <button type="submit">Generate Itinerary</button>
-    </form>
+            <button type="submit">Generate Itinerary</button>
+        </form>
 
-    <div id="output"></div>
+        <div id="output" class="itinerary-container"></div>
 
-    <h2>Chat with the Travel Assistant</h2>
-    <div id="chatbox">
-        <input type="text" id="userMessage" placeholder="Ask about your trip...">
-        <button onclick="sendMessage()">Send</button>
+        <h2>Chat with the Travel Assistant</h2>
+        <div id="chatbox">
+            <input type="text" id="userMessage" placeholder="Ask about your trip...">
+            <button onclick="sendMessage()">Send</button>
+        </div>
+        <div id="chatOutput"></div>
     </div>
-    <div id="chatOutput"></div>
 
     <script>
         let generatedItinerary = "";
-    
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const today = new Date().toISOString().split("T")[0]; // Get today's date in YYYY-MM-DD format
+
+            const fromDate = document.getElementById("from_date");
+            const toDate = document.getElementById("to_date");
+
+            // Set the minimum selectable date to today
+            fromDate.min = today;
+            toDate.min = today;
+
+            // Ensure the end date is always on or after the start date
+            fromDate.addEventListener("change", function () {
+                toDate.min = fromDate.value;
+            });
+        });
+
         document.getElementById("itineraryForm").addEventListener("submit", async function(event) {
             event.preventDefault();
-    
-            // Get form values
             const city = document.getElementById("city").value;
             const interests = document.getElementById("interests").value.split(",");
             const budget = document.getElementById("budget").value;
             const people = document.getElementById("people").value;
             const from_date = document.getElementById("from_date").value;
             const to_date = document.getElementById("to_date").value;
-    
-            // Debugging: Log input data
-            console.log("Form Data:", { city, interests, budget, people, from_date, to_date });
-    
+
+            document.getElementById("output").innerHTML = "<p>Generating itinerary...</p>";
+
             try {
                 const response = await fetch("/api/generate-itinerary", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ city, interests, budget, people, from_date, to_date })
                 });
-    
-                // Debugging: Log raw response
-                console.log("Response:", response);
-    
-                if (!response.ok) {
-                    throw new Error("Server error: " + response.status);
-                }
-    
+
                 const data = await response.json();
-                console.log("Received Data:", data);
-    
-                generatedItinerary = data.itinerary;
-    
-                document.getElementById("output").innerHTML = `<h3>Itinerary:</h3><p>${generatedItinerary}</p>`;
+                generatedItinerary = data.itinerary || "No itinerary generated.";
+
+                const formattedItinerary = generatedItinerary.split("\n").filter(line => line.trim() !== "").map(line => {
+                    // Match time only once at the beginning
+                    const timeMatch = line.match(/^(\d{1,2}:\d{2} [APap][Mm])\b/);
+                    if (timeMatch) {
+                        line = line.replace(timeMatch[0], "").trim(); // Remove duplicate time from text
+                        return `<div class='itinerary-item'><strong>${timeMatch[0]}</strong> ${line.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')}</div>`;
+                    }
+                    return `<div class='itinerary-item'>${line.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')}</div>`; // Convert **text** to <strong>text</strong>
+                }).join("");
+
+                document.getElementById("output").innerHTML = `<h3>Your Itinerary:</h3>${formattedItinerary}`;
             } catch (error) {
-                console.error("Error:", error);
-                document.getElementById("output").innerHTML = `<p style="color: red;">Failed to generate itinerary.</p>`;
+                document.getElementById("output").innerHTML = `<p>Error generating itinerary. Please try again.</p>`;
+                console.error("Itinerary generation error:", error);
             }
         });
+
+        async function sendMessage() {
+            const userMessage = document.getElementById("userMessage").value.trim();
+            if (!userMessage) {
+                alert("Please enter a message before sending.");
+                return;
+            }
+            if (!generatedItinerary) {
+                alert("Please generate an itinerary first.");
+                return;
+            }
+            document.getElementById("chatOutput").innerHTML += `<p><strong>You:</strong> ${userMessage}</p>`;
+            try {
+                const response = await fetch("/api/chat", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ message: userMessage, itinerary: generatedItinerary })
+                });
+                const data = await response.json();
+                document.getElementById("chatOutput").innerHTML += `<p><strong>Bot:</strong> ${data.response}</p>`;
+                document.getElementById("userMessage").value = "";
+            } catch (error) {
+                document.getElementById("chatOutput").innerHTML += `<p><strong>Bot:</strong> Error responding. Please try again.</p>`;
+                console.error("Chatbot error:", error);
+            }
+        }
     </script>
-    
 </body>
 </html>

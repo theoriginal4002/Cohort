@@ -27,14 +27,29 @@ itinerary_prompt = ChatPromptTemplate.from_messages(
     [
         (
             "system",
-            "You are a helpful travel assistant. Create a travel itinerary for {city} based on "
-            "the user's interests: {interests}. The user has a budget of {budget} INR for {people} people, "
-            "traveling from {from_date} to {to_date}. Provide a structured plan including recommended places, "
-            "food options, and local experiences. If available, consider the weather: {weather}.",
+            "You are a helpful travel assistant. Create a structured travel itinerary for {city} "
+            "from {from_date} to {to_date} for {people} people with a budget of {budget} INR each. "
+            "Include start time of the activities in the format: 'HH:MM AM/PM - Activity Name'. "
+            "Use **bold** to highlight the day number, date, start timing and name of visit location only. "
+            "Provide transport information and weather ({weather})."
         ),
         ("human", "Create an itinerary for my trip."),
     ]
 )
+
+# itinerary_prompt = ChatPromptTemplate.from_messages(
+#     [
+#         (
+#             "system",
+#             "You are a helpful travel assistant. Create a travel itinerary for {city} based on "
+#             "the user's interests: {interests}. The user has a budget of {budget} INR each for {people} people, "
+#             "traveling from {from_date} to {to_date}. Provide a structured plan including recommended places, "
+#             "food options, and local experiences. If available, consider the weather: {weather}."
+#             "Give details about transporation too",
+#         ),
+#         ("human", "Create an itinerary for my trip."),
+#     ]
+# )
 
 # Serve HTML Pages
 @app.route("/", methods=["GET"])
@@ -102,6 +117,7 @@ def generate_itinerary():
         )
     )
 
+    response_text = response.content
     return jsonify({"itinerary": response.content, "weather": weather})
 
 # API Endpoint: Chatbot
